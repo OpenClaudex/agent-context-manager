@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openclaudex-ctx"
+version = "0.1.0"
+description = "Async cross-harness context management skills for agent sessions"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+ctx-jobs = "context_os.ctx.runner:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

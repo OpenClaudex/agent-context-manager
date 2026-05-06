@@ -68,57 +68,18 @@ Agent Context Manager 是一组 slash-command skills 和 Python workers，用来
 
 告诉你的 coding agent：
 
-> 请从 https://github.com/OpenClaudex/agent-context-manager 安装 Agent Context Manager，并把它配置到我的本地 coding-agent 工作流里，用于跨 harness 召回、异步 compact job 和可审阅的 context apply。
+> 请从 https://github.com/OpenClaudex/agent-context-manager 安装 Agent Context Manager。扫描我的 home 目录下有哪些本地 coding-agent 对话轨迹，把发现的 Claude Code / Codex / CodeBuddy / Cursor / Windsurf / Trae / Code Desk / Roo Code / Cline / Continue / Aider / Goose / OpenHands / Devin / Copilot Workspace / 公司内部 agent 历史路径注册为 recall sources，并配置跨 harness 召回、异步 compact job 和可审阅的 context apply。
 
-底层命令细节在 [`skills/`](skills) 下的 slash-command skills 里。如果 agent 需要手动 fallback，可以使用下面的命令。
-
-先 clone 一次：
-
-```bash
-git clone https://github.com/OpenClaudex/agent-context-manager.git
-cd agent-context-manager
-```
-
-### Claude Code
-
-```bash
-./scripts/install-claude.sh
-```
-
-重启 Claude Code 后使用：
-
-```text
-/ctx-recall "why did we choose BM25 instead of embeddings"
-/ctx-compact preserve architecture decisions and TODOs
-/ctx-jobs
-```
-
-### CodeBuddy
-
-```bash
-./scripts/install-codebuddy.sh
-```
-
-重启 CodeBuddy 后使用同样的 `/ctx-*` 命令。
-
-### Codex / 通用 CLI
-
-```bash
-PYTHONPATH=src python3 -m context_os.ctx.workers.recall "VCC architecture" --scope all --budget 8000 --max-hits 5
-PYTHONPATH=src python3 -m context_os.ctx.runner list
-```
+安装后，在 agent session 中使用 `/ctx-recall`、`/ctx-compact`、`/ctx-jobs`。底层实现细节在 [`skills/`](skills) 下的 slash-command skills 里。
 
 ## ✨ 功能
 
-Agent Context Manager 聚焦于可审阅的 context 操作：
+Agent Context Manager 聚焦一个工作流：
 
-- recall 和 compact 都作为后台 job 运行，前台对话可以继续。
-- 跨本地 Claude Code、CodeBuddy、Codex JSONL 日志召回历史 context。
-- 把当前 session 压缩成结构化候选摘要。
-- 使用简单的本地文件型 job 队列存储结果。
-- 通过 `apply` / `discard` 把候选生成和正式采用分离。
-- 使用 VCC 风格 conversation compilation 做 transcript 搜索和 context view。
-- 支持通过 `claude -p` 或 `codebuddy -p` 做后台总结。
+- 在一个 session 里搜索很多本地 coding-agent 历史。
+- 把当前 session context 压缩成候选摘要。
+- 在候选 context 进入当前 prompt 前保持可审阅。
+- 当发现新的 harness 时，让 coding agent 把它的本地 trace source 接进来。
 
 ## 🧩 命令
 
@@ -130,44 +91,27 @@ Agent Context Manager 聚焦于可审阅的 context 操作：
 
 ### 本地召回来源
 
-`/ctx-recall` 的目标是搜索任何你有权限检查的本地 coding-agent 对话轨迹。当前内置 source discovery 覆盖一些常见本地路径，例如：
+`/ctx-recall` 的目标是搜索任何你有权限检查的本地 coding-agent 对话轨迹。它可以覆盖内置 source，也可以由 agent 继续接入更多工具，例如：
 
 ```text
-~/.codebuddy/projects
-~/.claude/projects
-~/.claude-internal/projects
-~/.codex/sessions
-~/.codex-internal/sessions
-```
-
-当前内置支持的召回 scope：
-
-```text
---scope all | codebuddy | claude | codex
+Claude Code、Codex、CodeBuddy、Cursor、Windsurf、Trae、Code Desk、
+Roo Code、Cline、Continue、Aider、Goose、OpenHands、Devin、
+Copilot Workspace、公司内部 agent 版本，以及其他本地 harness。
 ```
 
 如果你的某个 harness 没被自动扫到，直接告诉 agent 要加什么：
 
 > 请为 Cursor 的历史对话增加 recall 支持，它们在 `~/Library/Application Support/Cursor/User/globalStorage/...`，并让 `/ctx-recall` 把这个 source 加入跨 harness 搜索。
 
-预期工作流是 agent-native 的：告诉 coding agent 缺的是哪个工具，或者给出本地 trace 路径，让它把这个 source 接进 recall source discovery。
+预期工作流是 agent-native 的：告诉 coding agent 缺的是哪个工具，或者给出本地 trace 路径，让它把这个 source 接进 source discovery。
 
 ## 🛡️ 安全模型
 
-Agent Context Manager 把 context 注入视为高风险操作。
-
-- **先审阅，再 apply。** Recall 和 compact 结果都是候选内容，不会自动修改 prompt。
-- **没有隐藏云端存储。** Jobs 是 `.ctx/jobs/` 下的本地 JSON 文件。
-- **不持久化凭据。** 不要把 secret、token、私密截图、凭据写入示例或 job 结果。
-- **compact 只针对当前 session。** `/ctx-compact` 不会默认压缩全部用户历史。
-- **recall 是 best-effort。** `/ctx-recall` 可能搜不到，也可能搜到元记录；需要人工检查后再 apply。
-- **显式依赖 VCC。** 当前版本用 VCC 作为 compilation/search backend。
+Context 注入是高风险操作，所以 `ctx` 保持本地运行、review-first：recall 和 compact 结果都是候选内容，job 存在 `.ctx/jobs/`，任何内容进入当前 session 前都需要显式确认。
 
 ## 🧪 为什么做这个
 
-大多数 agent harness 已经保存了很丰富的 trace：用户消息、assistant 摘要、工具调用、终端输出、文件路径。问题不总是 agent 没有记忆，而是有用 context 在当前工作窗口之外。
-
-Agent Context Manager 不是 memory palace。它是一个轻量 context 操作闭环：
+大多数 agent harness 已经保存了丰富 trace。`ctx` 把这些 trace 变成跨工具可搜索的 context，再进入一个可审阅的操作闭环：
 
 ```text
 召回旧 context -> 压缩当前 context -> 审阅结果 -> 明确 apply

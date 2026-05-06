@@ -68,57 +68,18 @@ Agent Context Manager is a small set of slash-command skills and Python workers 
 
 Tell your coding agent:
 
-> Install Agent Context Manager from https://github.com/OpenClaudex/agent-context-manager and set it up for cross-harness recall, async compact jobs, and reviewable context application in my local coding-agent workflow.
+> Install Agent Context Manager from https://github.com/OpenClaudex/agent-context-manager. Scan my home directory for local coding-agent conversation traces, register the discovered Claude Code / Codex / CodeBuddy / Cursor / Windsurf / Trae / Code Desk / Roo Code / Cline / Continue / Aider / Goose / OpenHands / Devin / Copilot Workspace / internal-agent history paths as recall sources, and set up cross-harness recall, async compact jobs, and reviewable context application.
 
-Low-level command details live in the slash-command skills under [`skills/`](skills). If your agent needs a manual fallback, use the commands below.
-
-Clone once:
-
-```bash
-git clone https://github.com/OpenClaudex/agent-context-manager.git
-cd agent-context-manager
-```
-
-### Claude Code
-
-```bash
-./scripts/install-claude.sh
-```
-
-Restart Claude Code, then use:
-
-```text
-/ctx-recall "why did we choose BM25 instead of embeddings"
-/ctx-compact preserve architecture decisions and TODOs
-/ctx-jobs
-```
-
-### CodeBuddy
-
-```bash
-./scripts/install-codebuddy.sh
-```
-
-Restart CodeBuddy before using the same `/ctx-*` commands.
-
-### Codex / Generic CLI
-
-```bash
-PYTHONPATH=src python3 -m context_os.ctx.workers.recall "VCC architecture" --scope all --budget 8000 --max-hits 5
-PYTHONPATH=src python3 -m context_os.ctx.runner list
-```
+After setup, use `/ctx-recall`, `/ctx-compact`, and `/ctx-jobs` from your agent session. Low-level implementation details live in the slash-command skills under [`skills/`](skills).
 
 ## ✨ Features
 
-Agent Context Manager focuses on reviewable context operations:
+Agent Context Manager focuses on one workflow:
 
-- Runs recall and compact as background jobs, so the foreground conversation can continue.
-- Recalls historical context across local Claude Code, CodeBuddy, and Codex JSONL logs.
-- Compacts the current session into a structured candidate summary.
-- Stores results in a simple local file-based job queue.
-- Separates candidate generation from application through `apply` / `discard`.
-- Uses VCC-style conversation compilation for transcript search and context views.
-- Supports `claude -p` or `codebuddy -p` for background summarization.
+- Search many local coding-agent histories from one session.
+- Compact current-session context into a candidate summary.
+- Keep recall and compact results reviewable before they enter the active prompt.
+- Let a coding agent add more local trace sources when it finds a new harness.
 
 ## 🧩 Commands
 
@@ -130,44 +91,27 @@ Agent Context Manager focuses on reviewable context operations:
 
 ### Local Recall Sources
 
-`/ctx-recall` is meant to search any local coding-agent conversation trace you are authorized to inspect. The built-in source discovery currently covers common local paths such as:
+`/ctx-recall` is meant to search any local coding-agent conversation trace you are authorized to inspect. This includes built-in support and agent-added sources for tools such as:
 
 ```text
-~/.codebuddy/projects
-~/.claude/projects
-~/.claude-internal/projects
-~/.codex/sessions
-~/.codex-internal/sessions
-```
-
-Supported built-in recall scopes:
-
-```text
---scope all | codebuddy | claude | codex
+Claude Code, Codex, CodeBuddy, Cursor, Windsurf, Trae, Code Desk,
+Roo Code, Cline, Continue, Aider, Goose, OpenHands, Devin,
+Copilot Workspace, internal company builds, and other local harnesses.
 ```
 
 If your agent does not find another harness, tell it what to add:
 
 > Add recall support for Cursor conversations stored under `~/Library/Application Support/Cursor/User/globalStorage/...`, then make `/ctx-recall` include that source in cross-harness search.
 
-The intended workflow is agent-native: name the missing coding agent or give the local trace path, and let your coding agent wire it into the recall source discovery.
+The intended workflow is agent-native: name the missing coding agent or give the local trace path, and let your coding agent wire it into source discovery.
 
 ## 🛡️ Safety Model
 
-Agent Context Manager treats context injection as a risky operation.
-
-- **Review before apply.** Recall and compact results are candidates, not automatic prompt mutations.
-- **No hidden cloud storage.** Jobs are local JSON files under `.ctx/jobs/`.
-- **No credential persistence.** Do not put secrets, tokens, private screenshots, or credentials into examples or job results.
-- **Current-session compact only.** `/ctx-compact` summarizes the active session, not the entire user history.
-- **Best-effort recall.** `/ctx-recall` can miss relevant history or return meta-results; users should inspect before applying.
-- **Explicit VCC dependency.** VCC is currently used as the compilation/search backend.
+Context injection is high-risk, so `ctx` stays local and review-first: recall and compact results are candidates, jobs are stored under `.ctx/jobs/`, and nothing is applied to the active session until you explicitly accept it.
 
 ## 🧪 Why This Exists
 
-Most agent harnesses already persist rich traces: user messages, assistant reasoning summaries, tool calls, terminal output, and file paths. The problem is not always that the agent has no memory. The problem is that useful context lives outside the current working window.
-
-Agent Context Manager is not a memory palace. It is a lightweight operating loop for context:
+Most agent harnesses already persist rich traces. `ctx` makes those traces searchable across tools, then turns the result into a reviewable context operation:
 
 ```text
 recall old context -> compact current context -> review result -> apply deliberately

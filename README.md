@@ -1,4 +1,4 @@
-# 🚀 ctx
+# 🚀 Agent Context Manager
 
 <p align="center">
   <strong>Async cross-harness context management for agent sessions.</strong>
@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/OpenClaudex/ctx/releases"><img alt="Release" src="https://img.shields.io/github/v/release/OpenClaudex/ctx?include_prereleases&label=release"></a>
+  <a href="https://github.com/OpenClaudex/agent-context-manager/releases"><img alt="Release" src="https://img.shields.io/github/v/release/OpenClaudex/agent-context-manager?include_prereleases&label=release"></a>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-green"></a>
   <img alt="Status" src="https://img.shields.io/badge/status-0.1--alpha-orange">
   <img alt="Claude Code" src="https://img.shields.io/badge/Claude%20Code-skill--ready-6b46c1">
@@ -32,7 +32,7 @@
 >
 > Agent sessions do not only need a bigger prompt window. They need a safer way to bring old context back, compress current context, and decide what should actually enter the active conversation.
 >
-> `ctx` turns context work into reviewable background jobs: recall or compact first, inspect the candidate result, then apply or discard it.
+> Agent Context Manager (`ctx`) turns context work into reviewable background jobs: recall or compact first, inspect the candidate result, then apply or discard it.
 
 ## 🧭 Quick Navigation
 
@@ -41,7 +41,7 @@
 >
 > **I'm an agent** -> Read the slash-command skills in [`skills/`](skills) and the design notes in [docs/design.md](docs/design.md).
 
-`ctx` is a small set of slash-command skills and Python workers for asynchronous context management in local agent sessions.
+Agent Context Manager is a small set of slash-command skills and Python workers for asynchronous context management in local agent sessions. Its command namespace is `ctx`.
 
 - **For Claude Code and CodeBuddy**: install `/ctx-recall`, `/ctx-compact`, and `/ctx-jobs` as skills.
 - **For Codex and other harnesses**: run the backend directly through the Python CLI.
@@ -55,8 +55,8 @@
 ## ⚡ Quick Start
 
 ```bash
-git clone https://github.com/OpenClaudex/ctx.git
-cd ctx
+git clone https://github.com/OpenClaudex/agent-context-manager.git
+cd agent-context-manager
 ```
 
 ### Claude Code
@@ -90,7 +90,7 @@ PYTHONPATH=src python3 -m context_os.ctx.runner list
 
 ## ✨ Features
 
-`ctx` focuses on reviewable context operations:
+Agent Context Manager focuses on reviewable context operations:
 
 - Runs recall and compact as background jobs, so the foreground conversation can continue.
 - Recalls historical context across local Claude Code, CodeBuddy, and Codex JSONL logs.
@@ -128,7 +128,7 @@ Supported recall scopes:
 
 ## 🛡️ Safety Model
 
-`ctx` treats context injection as a risky operation.
+Agent Context Manager treats context injection as a risky operation.
 
 - **Review before apply.** Recall and compact results are candidates, not automatic prompt mutations.
 - **No hidden cloud storage.** Jobs are local JSON files under `.ctx/jobs/`.
@@ -141,7 +141,7 @@ Supported recall scopes:
 
 Most agent harnesses already persist rich traces: user messages, assistant reasoning summaries, tool calls, terminal output, and file paths. The problem is not always that the agent has no memory. The problem is that useful context lives outside the current working window.
 
-`ctx` is not a memory palace. It is a lightweight operating loop for context:
+Agent Context Manager is not a memory palace. It is a lightweight operating loop for context:
 
 ```text
 recall old context -> compact current context -> review result -> apply deliberately
@@ -150,7 +150,7 @@ recall old context -> compact current context -> review result -> apply delibera
 ## 📚 Docs
 
 - [Design Notes](docs/design.md)
-- [ctx and VCC](docs/vcc-comparison.md)
+- [Agent Context Manager and VCC](docs/vcc-comparison.md)
 - [Claude Code installer](scripts/install-claude.sh)
 - [CodeBuddy installer](scripts/install-codebuddy.sh)
 - Skills: [`ctx-recall`](skills/ctx-recall/SKILL.md), [`ctx-compact`](skills/ctx-compact/SKILL.md), [`ctx-jobs`](skills/ctx-jobs/SKILL.md)
@@ -164,7 +164,7 @@ recall old context -> compact current context -> review result -> apply delibera
 
 ## 🌐 Related Projects
 
-`ctx` focuses on context-management skills for agent sessions. Related projects:
+Agent Context Manager focuses on context-management skills for agent sessions. Related projects:
 
 - [VCC](https://github.com/lllyasviel/VCC) - View-oriented Conversation Compiler for agent trace analysis and conversation recovery.
 - [OpenReview Agent](https://github.com/OpenClaudex/openreview-agent) - OpenClaudex skill and CLI toolkit for safe OpenReview submission workflows.
@@ -172,11 +172,11 @@ recall old context -> compact current context -> review result -> apply delibera
 
 ## ⭐ Star History
 
-<a href="https://star-history.com/#OpenClaudex/ctx&Date">
+<a href="https://star-history.com/#OpenClaudex/agent-context-manager&Date">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=OpenClaudex/ctx&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=OpenClaudex/ctx&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=OpenClaudex/ctx&type=Date" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=OpenClaudex/agent-context-manager&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=OpenClaudex/agent-context-manager&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=OpenClaudex/agent-context-manager&type=Date" />
   </picture>
 </a>
 
@@ -191,6 +191,6 @@ recall old context -> compact current context -> review result -> apply delibera
 </p>
 
 <p align="center">
-  <a href="https://github.com/OpenClaudex/ctx/issues">Report Issues</a> ·
-  <a href="https://github.com/OpenClaudex/ctx/issues/new?labels=enhancement">Feature Requests</a>
+  <a href="https://github.com/OpenClaudex/agent-context-manager/issues">Report Issues</a> ·
+  <a href="https://github.com/OpenClaudex/agent-context-manager/issues/new?labels=enhancement">Feature Requests</a>
 </p>

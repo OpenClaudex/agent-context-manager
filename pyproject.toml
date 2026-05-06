@@ -3,7 +3,7 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "openclaudex-ctx"
+name = "openclaudex-agent-context-manager"
 version = "0.1.0"
 description = "Async cross-harness context management skills for agent sessions"
 requires-python = ">=3.9"

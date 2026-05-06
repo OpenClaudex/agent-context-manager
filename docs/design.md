@@ -1,6 +1,6 @@
 # Design
 
-`ctx` has three operations:
+Agent Context Manager (`ctx`) has three operations:
 
 ```text
 /ctx-recall  -> background global recall job

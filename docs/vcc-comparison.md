@@ -1,10 +1,10 @@
-# ctx and VCC
+# Agent Context Manager and VCC
 
-`ctx` is not a replacement for VCC.
+Agent Context Manager (`ctx`) is not a replacement for VCC.
 
-VCC compiles raw conversation logs into views that agents can read and search. `ctx` uses that insight and adds an async review loop around context operations.
+VCC compiles raw conversation logs into views that agents can read and search. Agent Context Manager uses that insight and adds an async review loop around context operations.
 
-| Dimension | VCC | ctx |
+| Dimension | VCC | Agent Context Manager |
 |---|---|---|
 | Main job | Compile and search conversation logs | Manage context operations as reviewable jobs |
 | Primary commands | `/recall`, `/searchchat`, `/readchat` | `/ctx-recall`, `/ctx-compact`, `/ctx-jobs` |
@@ -16,5 +16,5 @@ Summary:
 
 ```text
 VCC recovers context.
-ctx manages whether recalled or compacted context should enter the current session.
+Agent Context Manager manages whether recalled or compacted context should enter the current session.
 ```

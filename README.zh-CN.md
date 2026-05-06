@@ -1,4 +1,4 @@
-# 🚀 ctx
+# 🚀 Agent Context Manager
 
 <p align="center">
   <strong>面向 Agent Session 的异步跨 Harness 上下文管理技能。</strong>
@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/OpenClaudex/ctx/releases"><img alt="Release" src="https://img.shields.io/github/v/release/OpenClaudex/ctx?include_prereleases&label=release"></a>
+  <a href="https://github.com/OpenClaudex/agent-context-manager/releases"><img alt="Release" src="https://img.shields.io/github/v/release/OpenClaudex/agent-context-manager?include_prereleases&label=release"></a>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-green"></a>
   <img alt="Status" src="https://img.shields.io/badge/status-0.1--alpha-orange">
   <img alt="Claude Code" src="https://img.shields.io/badge/Claude%20Code-skill--ready-6b46c1">
@@ -32,7 +32,7 @@
 >
 > Agent session 不只是需要更大的上下文窗口。更重要的是：能安全地把旧 context 找回来，把当前 context 压轻，并明确决定哪些内容真正进入当前对话。
 >
-> `ctx` 把 context 操作变成可审阅的后台 job：先 recall 或 compact，再检查候选结果，最后 apply 或 discard。
+> Agent Context Manager（`ctx`）把 context 操作变成可审阅的后台 job：先 recall 或 compact，再检查候选结果，最后 apply 或 discard。
 
 ## 🧭 快速导航
 
@@ -41,7 +41,7 @@
 >
 > **我是 agent** -> 读取 [`skills/`](skills) 下的 slash-command skills，以及 [docs/design.md](docs/design.md)。
 
-`ctx` 是一组 slash-command skills 和 Python workers，用来在本地 agent session 中做异步 context 管理。
+Agent Context Manager 是一组 slash-command skills 和 Python workers，用来在本地 agent session 中做异步 context 管理。它的命令 namespace 是 `ctx`。
 
 - **面向 Claude Code 和 CodeBuddy**：安装 `/ctx-recall`、`/ctx-compact`、`/ctx-jobs` 三个 skills。
 - **面向 Codex 和其他 harness**：可以直接通过 Python CLI 使用 backend。
@@ -55,8 +55,8 @@
 ## ⚡ 快速开始
 
 ```bash
-git clone https://github.com/OpenClaudex/ctx.git
-cd ctx
+git clone https://github.com/OpenClaudex/agent-context-manager.git
+cd agent-context-manager
 ```
 
 ### Claude Code
@@ -90,7 +90,7 @@ PYTHONPATH=src python3 -m context_os.ctx.runner list
 
 ## ✨ 功能
 
-`ctx` 聚焦于可审阅的 context 操作：
+Agent Context Manager 聚焦于可审阅的 context 操作：
 
 - recall 和 compact 都作为后台 job 运行，前台对话可以继续。
 - 跨本地 Claude Code、CodeBuddy、Codex JSONL 日志召回历史 context。
@@ -128,7 +128,7 @@ PYTHONPATH=src python3 -m context_os.ctx.runner list
 
 ## 🛡️ 安全模型
 
-`ctx` 把 context 注入视为高风险操作。
+Agent Context Manager 把 context 注入视为高风险操作。
 
 - **先审阅，再 apply。** Recall 和 compact 结果都是候选内容，不会自动修改 prompt。
 - **没有隐藏云端存储。** Jobs 是 `.ctx/jobs/` 下的本地 JSON 文件。
@@ -141,7 +141,7 @@ PYTHONPATH=src python3 -m context_os.ctx.runner list
 
 大多数 agent harness 已经保存了很丰富的 trace：用户消息、assistant 摘要、工具调用、终端输出、文件路径。问题不总是 agent 没有记忆，而是有用 context 在当前工作窗口之外。
 
-`ctx` 不是 memory palace。它是一个轻量 context 操作闭环：
+Agent Context Manager 不是 memory palace。它是一个轻量 context 操作闭环：
 
 ```text
 召回旧 context -> 压缩当前 context -> 审阅结果 -> 明确 apply
@@ -150,7 +150,7 @@ PYTHONPATH=src python3 -m context_os.ctx.runner list
 ## 📚 文档
 
 - [Design Notes](docs/design.md)
-- [ctx and VCC](docs/vcc-comparison.md)
+- [Agent Context Manager and VCC](docs/vcc-comparison.md)
 - [Claude Code installer](scripts/install-claude.sh)
 - [CodeBuddy installer](scripts/install-codebuddy.sh)
 - Skills: [`ctx-recall`](skills/ctx-recall/SKILL.md), [`ctx-compact`](skills/ctx-compact/SKILL.md), [`ctx-jobs`](skills/ctx-jobs/SKILL.md)
@@ -164,7 +164,7 @@ PYTHONPATH=src python3 -m context_os.ctx.runner list
 
 ## 🌐 相关项目
 
-`ctx` 聚焦 agent session 的 context-management skills。相关项目：
+Agent Context Manager 聚焦 agent session 的 context-management skills。相关项目：
 
 - [VCC](https://github.com/lllyasviel/VCC) - 面向 agent trace analysis 和 conversation recovery 的 View-oriented Conversation Compiler。
 - [OpenReview Agent](https://github.com/OpenClaudex/openreview-agent) - OpenClaudex 的安全 OpenReview 投稿 workflow skill / CLI。

@@ -32,11 +32,19 @@
 </p>
 
 > [!IMPORTANT]
-> **全局召回，局部压缩，人工确认。**
+> **从 harness-local memory，到 agent-native context recovery。**
 >
-> Agent session 不只是需要更大的上下文窗口。更重要的是：能安全地把旧 context 找回来，把当前 context 压轻，并明确决定哪些内容真正进入当前对话。
+> 我是在第 N 次重讲项目背景时意识到这个问题的。
 >
-> Agent Context Manager（`ctx`）把 context 操作变成可审阅的后台 job：先 recall 或 compact，再检查候选结果，最后 apply 或 discard。
+> 我的电脑里有十几个 coding agent 入口：Claude Code、Codex、CodeBuddy、Cursor、Trae、Code Desk，还有一些公司内部版本。它们都很强，也都在做自己的 memory。但每次切到一个新的 harness，我还是会遇到同一个问题：我明明已经和另一个窗口聊过这个任务、解释过约束、排除过方案、踩过坑，可新窗口仍然像什么都不知道。
+>
+> **问题不只是 memory，而是跨 harness 的 context recovery。**
+>
+> 单个工具的记忆系统当然有用，但它解决不了“我之前在哪个 agent 里聊过这件事？”这个问题。真实的工作流早就不是单一 agent、单一窗口、单一项目路径了。上下文散落在本地轨迹里，但下一次 agent 启动时，它们很难被找回。
+>
+> **所以我做了 Agent Context Manager。**
+>
+> 我的理解很简单：既然这些对话和操作都已经保存在本地，为什么不能搜索它们？为什么不能让 agent 从过去的 harness trace 里召回相关片段，压缩成一个候选 context block，然后由我审查、应用或丢弃？这就是 `ctx` 的目标：给 agent 一个跨工具的本地上下文层。
 
 ## 🧭 快速导航
 
@@ -57,6 +65,14 @@ Agent Context Manager 是一组 slash-command skills 和 Python workers，用来
 > 本项目与 Anthropic、OpenAI、CodeBuddy、Codex、VCC 均无官方从属关系。请只在你有权限访问的本地日志和 session 上使用。
 
 ## ⚡ 快速开始
+
+告诉你的 coding agent：
+
+> 请从 https://github.com/OpenClaudex/agent-context-manager 安装 Agent Context Manager，并把它配置到我的本地 coding-agent 工作流里，用于跨 harness 召回、异步 compact job 和可审阅的 context apply。
+
+底层命令细节在 [`skills/`](skills) 下的 slash-command skills 里。如果 agent 需要手动 fallback，可以使用下面的命令。
+
+先 clone 一次：
 
 ```bash
 git clone https://github.com/OpenClaudex/agent-context-manager.git
@@ -114,7 +130,7 @@ Agent Context Manager 聚焦于可审阅的 context 操作：
 
 ### 本地召回来源
 
-`/ctx-recall` 可以搜索：
+`/ctx-recall` 的目标是搜索任何你有权限检查的本地 coding-agent 对话轨迹。当前内置 source discovery 覆盖一些常见本地路径，例如：
 
 ```text
 ~/.codebuddy/projects
@@ -124,11 +140,17 @@ Agent Context Manager 聚焦于可审阅的 context 操作：
 ~/.codex-internal/sessions
 ```
 
-支持的召回 scope：
+当前内置支持的召回 scope：
 
 ```text
 --scope all | codebuddy | claude | codex
 ```
+
+如果你的某个 harness 没被自动扫到，直接告诉 agent 要加什么：
+
+> 请为 Cursor 的历史对话增加 recall 支持，它们在 `~/Library/Application Support/Cursor/User/globalStorage/...`，并让 `/ctx-recall` 把这个 source 加入跨 harness 搜索。
+
+预期工作流是 agent-native 的：告诉 coding agent 缺的是哪个工具，或者给出本地 trace 路径，让它把这个 source 接进 recall source discovery。
 
 ## 🛡️ 安全模型
 
@@ -166,13 +188,13 @@ Agent Context Manager 不是 memory palace。它是一个轻量 context 操作�
 - **v0.3**：source policy、隐私过滤、更强 stale detection。
 - **v0.4**：支持 VCC 之外的可插拔 recall backend。
 
-## 🌐 相关项目
+## 🙏 致谢
 
-Agent Context Manager 聚焦 agent session 的 context-management skills。相关项目：
+Agent Context Manager 特别受 [VCC](https://github.com/lllyasviel/VCC) 启发。VCC 是面向 agent trace analysis 和 conversation recovery 的 View-oriented Conversation Compiler。本项目的核心思路，包括把 conversation trace 编译成可检索的 context view，以及部分检索设计，都受到 VCC 的影响。
 
-- [VCC](https://github.com/lllyasviel/VCC) - 面向 agent trace analysis 和 conversation recovery 的 View-oriented Conversation Compiler。
-- [OpenReview Agent](https://github.com/OpenClaudex/openreview-agent) - OpenClaudex 的安全 OpenReview 投稿 workflow skill / CLI。
-- [Open Claudex Computer Use](https://github.com/OpenClaudex/open-claudex-computer-use) - 面向 Claude Code、Codex 和 MCP agents 的 macOS background computer use。
+`ctx` 的区别在于，它不绑定某一个单一 agent harness，而是试图凌驾在具体 harness 之上：跨本地 Claude Code、CodeBuddy、Codex trace 做全局搜索，把 recall 和 compact 做成异步 job，并且在任何候选 context 进入当前 session 之前保持可审查、可应用、可丢弃。
+
+也感谢更广泛的 context-management、conversation-recovery 和 agent-memory 项目。它们共同说明了一件事：agent context 应该可以被搜索、被检查，并且能在不同工具之间迁移。
 
 ## 📄 License
 

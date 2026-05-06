@@ -32,11 +32,19 @@
 </p>
 
 > [!IMPORTANT]
-> **Recall globally. Compact locally. Apply deliberately.**
+> **From harness-local memory to agent-native context recovery.**
 >
-> Agent sessions do not only need a bigger prompt window. They need a safer way to bring old context back, compress current context, and decide what should actually enter the active conversation.
+> I noticed the problem around the Nth time I had to re-explain project context.
 >
-> Agent Context Manager (`ctx`) turns context work into reviewable background jobs: recall or compact first, inspect the candidate result, then apply or discard it.
+> My machine has more than a dozen coding-agent entry points: Claude Code, Codex, CodeBuddy, Cursor, Trae, Code Desk, and a few internal company builds. They are all powerful, and many of them have their own memory systems. But every time I switch to a new harness, the same thing happens: I already discussed the task, explained the constraints, ruled out bad approaches, and hit the bugs somewhere else, yet the new window starts as if it knows nothing.
+>
+> **The problem is not just memory. It is cross-harness context recovery.**
+>
+> Harness-local memory is useful, but it does not answer the question: where did I already talk about this? Real agent work no longer lives in one agent, one window, or one project path. The context exists in local traces, but it is hard to recover when the next session starts.
+>
+> **So I built Agent Context Manager.**
+>
+> The premise is simple: if these conversations and tool traces are already stored locally, why can't an agent search them? `ctx` lets agents recall relevant fragments from past harness traces, compact them into a candidate context block, and let you review, apply, or discard the result.
 
 ## 🧭 Quick Navigation
 
@@ -57,6 +65,14 @@ Agent Context Manager is a small set of slash-command skills and Python workers 
 > Not affiliated with Anthropic, OpenAI, CodeBuddy, Codex, or VCC. Use only on local logs and sessions you are authorized to access.
 
 ## ⚡ Quick Start
+
+Tell your coding agent:
+
+> Install Agent Context Manager from https://github.com/OpenClaudex/agent-context-manager and set it up for cross-harness recall, async compact jobs, and reviewable context application in my local coding-agent workflow.
+
+Low-level command details live in the slash-command skills under [`skills/`](skills). If your agent needs a manual fallback, use the commands below.
+
+Clone once:
 
 ```bash
 git clone https://github.com/OpenClaudex/agent-context-manager.git
@@ -114,7 +130,7 @@ Agent Context Manager focuses on reviewable context operations:
 
 ### Local Recall Sources
 
-`/ctx-recall` can search:
+`/ctx-recall` is meant to search any local coding-agent conversation trace you are authorized to inspect. The built-in source discovery currently covers common local paths such as:
 
 ```text
 ~/.codebuddy/projects
@@ -124,11 +140,17 @@ Agent Context Manager focuses on reviewable context operations:
 ~/.codex-internal/sessions
 ```
 
-Supported recall scopes:
+Supported built-in recall scopes:
 
 ```text
 --scope all | codebuddy | claude | codex
 ```
+
+If your agent does not find another harness, tell it what to add:
+
+> Add recall support for Cursor conversations stored under `~/Library/Application Support/Cursor/User/globalStorage/...`, then make `/ctx-recall` include that source in cross-harness search.
+
+The intended workflow is agent-native: name the missing coding agent or give the local trace path, and let your coding agent wire it into the recall source discovery.
 
 ## 🛡️ Safety Model
 
@@ -166,13 +188,13 @@ recall old context -> compact current context -> review result -> apply delibera
 - **v0.3**: source policy controls, privacy filters, and stronger stale detection.
 - **v0.4**: pluggable recall backends beyond VCC.
 
-## 🌐 Related Projects
+## 🙏 Acknowledgements
 
-Agent Context Manager focuses on context-management skills for agent sessions. Related projects:
+Agent Context Manager is especially inspired by [VCC](https://github.com/lllyasviel/VCC), the View-oriented Conversation Compiler for agent trace analysis and conversation recovery. The core idea of compiling conversation traces into searchable context views, and several retrieval-oriented ideas in this project, are influenced by VCC.
 
-- [VCC](https://github.com/lllyasviel/VCC) - View-oriented Conversation Compiler for agent trace analysis and conversation recovery.
-- [OpenReview Agent](https://github.com/OpenClaudex/openreview-agent) - OpenClaudex skill and CLI toolkit for safe OpenReview submission workflows.
-- [Open Claudex Computer Use](https://github.com/OpenClaudex/open-claudex-computer-use) - background computer use for Claude Code, Codex, and MCP agents on macOS.
+The difference is that `ctx` is designed to sit above any single agent harness: it searches across local Claude Code, CodeBuddy, and Codex traces, runs recall and compact as asynchronous jobs, and keeps candidate context reviewable before anything enters the active session.
+
+Thanks also to the broader context-management, conversation-recovery, and agent-memory projects that make it clearer why agent context should be searchable, inspectable, and portable across tools.
 
 ## ⭐ Star History
 

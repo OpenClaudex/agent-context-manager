@@ -1,6 +1,10 @@
 # 🚀 Agent Context Manager
 
 <p align="center">
+  <img src="docs/assets/cover.png" alt="Agent Context Manager cover" width="960">
+</p>
+
+<p align="center">
   <strong>面向 Agent Session 的异步跨 Harness 上下文管理技能。</strong>
 </p>
 

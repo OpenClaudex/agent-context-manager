@@ -1,6 +1,10 @@
 # 🚀 Agent Context Manager
 
 <p align="center">
+  <img src="docs/assets/cover.png" alt="Agent Context Manager cover" width="960">
+</p>
+
+<p align="center">
   <strong>Async cross-harness context management for agent sessions.</strong>
 </p>
 
